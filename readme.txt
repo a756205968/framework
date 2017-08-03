@@ -1,2 +1,1 @@
-Git is a distributed version control system.
-Git is free software under the GPL.
+这是我的学习笔记和配置文件等等，顺便也把github学习了

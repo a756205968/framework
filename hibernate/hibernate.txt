@@ -1,0 +1,38 @@
+1.应用在javaee三层中dao层框架
+2.在dao层实现对数据库的crud操作，是对jdbc、sql的封装
+3.开源的轻量级的框架
+orm思想（对象关系映射）——object relational mapping
+    使用orm思想对数据库进行crud操作
+	（1）让实体类和数据库表进行一一对应关系
+	         实体类首先和表对应		//类名对应表名
+			 实体类属性和表字段对应	//属性对应字段
+	（2）不需要直接操作数据库表，直接操作表对应实体类对象
+使用
+    创建实体类对象
+	    session.save(对象);	//把数据插入表
+	
+入门
+    搭建环境
+	1.导入jar包，required和jpa里的包，（日志信息jar包）、MySQL驱动包		//把所有包都复制到一个文件
+	2.创建实体类，可以自动建表
+	3.配置实体类和表的一一对应关系（映射），用配置文件实现
+		（1）创建一个xml格式的配置文件——名称和位置没有固定要求，一般在所在实体类包创建，命名为实体类名字.hbm.xml
+		（2）引入xml约束，直接去dtd文件下复制第一段约束——
+				<!DOCTYPE hibernate-mapping PUBLIC 
+				"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+				"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+		   <hibernate-mapping>				//根标签
+				<class name="" table="">	//配置类和表对应,name是实体类的全路径（包名+类名），table是表名称
+				
+					<id name="" column="">  //id为唯一字段，相当于主键，name为实体类id属性的名称，column为表的字段的名称
+						<generator class="native"></generator>	//设置主键的增长值，native为自动增长
+					</id>
+					
+					//其他属性和字段配置
+					<property name="" column="">	//name为实体类属性的名称，column为表的字段的名称，有几个写几个property标签
+					</property>
+				</class>				
+				
+		   </hibernate-mapping>
+	    （3）
+		07

@@ -17,7 +17,7 @@ orm思想（对象关系映射）——object relational mapping
 	2.创建实体类，可以自动建表
 	3.配置实体类和表的一一对应关系（映射），用配置文件实现
 		（1）创建一个xml格式的配置文件——名称和位置没有固定要求，一般在所在实体类包创建，命名为实体类名字.hbm.xml
-		（2）引入xml约束，直接去dtd文件下复制第一段约束——
+		（2）引入xml约束，直接去dtd文件下复制第一段约束——			//hibernate-mapping-3.0.dtd中
 				<!DOCTYPE hibernate-mapping PUBLIC 
 				"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 				"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
@@ -34,5 +34,29 @@ orm思想（对象关系映射）——object relational mapping
 				</class>				
 				
 		   </hibernate-mapping>
-	    （3）
-		07
+	    （3）创建核心配置文件，名称和位置必须固定
+				位置必须在src下
+				名称必须为hibernate.cfg.xml
+			引入dtd约束					//hibernate-configuration-3.0.dtd中
+				<!DOCTYPE hibernate-configuration PUBLIC
+				"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+				"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+			<hibernate-configuration>
+			
+				<session-factory>				//需要的值去hibernate.properties中查找
+				//配置数据库信息	必须
+					<property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+					<property name="hibernate.connection.username">system</property>
+					<property name="hibernate.connection.password">root</property>
+					<property name="hibernate.connection.url">jdbc:oracle:thin:@localhost:1521:orcl</property>
+				//配置hibernate信息		可选
+					<property name="hibernate.show_sql">true</property>			//控制台输出底层sql
+					<property name="hibernate.format_sql">true</property>		//格式化sql语句，分行显示
+					<property name="hibernate.hbm2ddl.auto">update</property>	//用的最多的就是update，可以自动创建表
+					<property name="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</property>	//配置数据库的方言，让框架识别不同数据库的不同关键字
+				//配置映射文件信息	必须
+					<mapping resource="src下面User.hbm.xml文件的路径，与上面区别为使用.这使用/"></mapping>	//可以按住ctrl，然后点击鼠标左键，看是否跳转，验证正确性
+				</session-factory>
+
+			</hibernate-configuration>
+			08

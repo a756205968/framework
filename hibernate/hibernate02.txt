@@ -1,0 +1,41 @@
+大纲
+	1.实体类编写规则
+	2.hibernate主键生成策略
+	3.实体类操作
+		crud
+		实体类对象状态
+	4.hibernate的一级缓存
+	5.hibernate的事务操作
+		事务代码规范写法
+	6.hibernate其他api（查询）
+一、实体类编写规则
+	1.属性私有，用set/get方法操作
+	2.要求有主键
+	3.实体类属性建议不使用基本数据类型，使用包装类Integer
+
+二、hibernate的主键生成策略
+	native：自动增长
+	uuid：自动生成32位全局字符串
+	
+三、实体类操作
+	1.添加——session.save(实体类；
+	根据id值查询——session.get(实体类.class,id值);返回的是一个对象
+	修改——根据id查询，返回对象，修改返回的对象，session.update(User);
+	删除——先查询session.get(User.class,1),然后再删除session.delete(User)
+	2.实体类对象的状态
+		瞬时态：对象里面没有id值，对象与session没有关联
+		持久态：对象里面有id值，对象与session有关联		//session.get(User.class,1)
+		托管态：对象有id值，但对象与session没有关系		//用的很少
+	3.saveOrUpdate()方法,实现添加或修改
+
+四、hibernate的一级缓存
+	1.就是一种优化的方式
+	2.特点
+		第一类 hibernate一级缓存
+			默认就是使用的
+			使用范围：session范围（创建session到关闭session）
+			一级缓存存储数据必须是持久态数据
+		第二类 hibernate二级缓存
+			目前不使用，用redis替代
+	3.验证：两次查一样的东西，然后看控制台的输出sql语句
+09

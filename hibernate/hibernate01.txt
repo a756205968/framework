@@ -59,4 +59,55 @@ orm思想（对象关系映射）——object relational mapping
 				</session-factory>
 
 			</hibernate-configuration>
-			08
+			
+	操作步骤		//只有第五步有变化
+		1.加载hibernate核心配置文件
+			Configuration cfg=new Configuration();
+			cfg.configure();
+		2.创建SessionFactory对象
+			SessionFactory sessionFactory=cfg.buildSessionFactory();
+		3.使用SessionFactory对象创建Session
+			Session session=sessionFactory.openSession();
+		4.开启事务
+			Transaction tx=session.beginTransaction();
+		5.写具体crud操作
+			User user=new User();
+			user.setUsername("小王");
+			user.setPassword("250");
+			user.setAddress("日本");
+			session.save(user);
+		6.提交事务
+			tx.commit();
+		7.关闭资源
+			session.close();
+			sessionFactory.close();
+			
+	核心API讲解
+		Configuration
+			Configuration cfg=new Configuration();
+			cfg.configure();
+			1.到src下面找到名字为hibernate.cfg.xml的配置文件，创建对象，把配置文件放到对象里面
+		SessionFactory
+			SessionFactory sessionFactory=cfg.buildSessionFactory();
+			1.使用Configuration对象创建SessionFactory();
+				根据核心配置文件中，数据库配置，映射文件配置，在数据库创建表，需要配置hibernate.hbm2ddl.auto=true
+			2.这个过程非常耗资源
+				建议一个项目创建一个sessionFactiry对象
+			3.2的实现可以把Configuration与SessionFactory抽取成一个工具类，放入一个静态代码块，然后用一个静态方法返回sessionFactory;
+		Session
+			1.session类似jdbc中的连接
+			2.调用session中不同的方法实现crud
+				添加——save()
+				修改——update()
+				删除——delete()
+				根据id查询——get()
+			3.session为单线程对象(不能共用)
+		Transaction
+			Transaction tx=session.beginTransaction();
+			tx.commit();
+			tx.rollback();
+			
+	配置文件没有提示信息问题
+		1.联网
+		2.把约束文件引入eclipse中
+			window——preferences——搜索xml c——在配置文件中复制一句话（http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd）——add——key types选择uri，key为上一步复制地址,location为本地的dtd文件所在位置——点ok完成——重启eclipse

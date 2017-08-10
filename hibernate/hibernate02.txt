@@ -24,7 +24,7 @@
 	删除——先查询session.get(User.class,1),然后再删除session.delete(User)
 	2.实体类对象的状态
 		瞬时态：对象里面没有id值，对象与session没有关联
-		持久态：对象里面有id值，对象与session有关联		//session.get(User.class,1)
+		持久态：对象里面有id值，对象与session有关联，会自动跟新数据库s		//session.get(User.class,1)
 		托管态：对象有id值，但对象与session没有关系		//用的很少
 	3.saveOrUpdate()方法,实现添加或修改
 
@@ -38,4 +38,41 @@
 		第二类 hibernate二级缓存
 			目前不使用，用redis替代
 	3.验证：两次查一样的东西，然后看控制台的输出sql语句
-09
+
+五、事务代码的规范
+	catch中回滚，try中提交，finally关闭资源
+	
+六、hibernate绑定session
+	1.获取与本地session绑定的session
+		(1)在hibernate核心配置文件中配置——hibernate.cfg.xml
+			<property name="hibernate.current_session_context_class">thread</property>
+		(2)调用sessionFactory的方法得到
+			sessionFactory.getCurrentSession()
+		(3)session会自动关闭，不需要关闭资源
+		
+七、Query对象
+	1.使用query对象，不需要写sql语句，但要写hql语句
+		hql与sql区别
+		a.使用sql操作的表和字段，hql操作的实体类和属性
+		查询所有：from 实体类的名称
+		使用：
+		(1)创建Query对象
+			Query query=session.createQuery("FROM User");
+		(2)调用query对象里面的方法得到结果
+			List<Useer> list=query.list();
+		(3)遍历list集合
+	Criteria对象
+		(1)创建对象，
+		Criteria criteria=session.createCriteria(User.class)
+		(2)调用方法
+		List<User> list=criteria.list();
+		(3)遍历集合
+	SQLQuery对象:可以写底层sql语句
+		(1)创建对象
+		SQLQuery sqlQuery=session.createSQLQuery("sql语句")
+		(2)调用方法：返回的集合里面是数组,可以用sqlQuery.addEntity(User.class)转变为对象形式，和上两个相同
+		List<Object[]> list=sqlQuery.list();
+		(3)遍历集合
+		for(Object[] objects:list){
+			System.out.println(Arrays.toString(objects));
+		}

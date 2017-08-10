@@ -1,0 +1,80 @@
+一对多
+	映射配置
+		1.创建实体类LinkMan、Customer，添加属性
+		2.让两个实体类之间先互相进行表示
+			a.Customer里面要表示多个联系人——set集合，Set<LinkMan> setLinMan=new HashSet<LinkMan>();
+			b.LinkMan里面有一个客户——对象
+		3.配置映射关系，两个映射文件，
+			a.在客户的映射文件中表示所有联系人
+				<set name="setLinMan">		//在客户实体类里面表示联系人的set集合名称，setLinMan
+					<key column="clid"></key>	//外键名字，hibernate要求多和一都设置外键
+					<one-to-many class="包名.类名"/>		//class写联系人实体类全路径
+				</set>					
+			b.在联系人映射文件中，表示所属客户
+				<many-to-one name="customer" class="包名.类名" column="clid"></many-to-one>		//name为,class为全路径,column为外键名称
+		4.创建核心配置文件，引入映射文件
+			<mapping resource="包名/Customer.hbn.xml"/>
+			<mapping resource="包名/LinkMan.hbn.xml"/>
+	级联操作
+	一对多级联保存
+			a.创建联系人和客户对象，然后把联系人放到客户set集合中，customer.getSetLinkMan().add(linkman);
+			b.把客户对象放到联系人，linkman.setCustomer(customer);
+			c.保存到数据库session.save(customer);session.save(linkman);
+		简单操作
+			a.在客户映射文件中进行配置
+				<set name="setLinkMan" cascade="save-update"></set>
+			b.创建客户和联系人，只需要把联系人放到客户中,只需要保存客户
+				customer.getSetLinkMan().add(linkman);
+				session.save(customer);
+	一对多级联删除
+		a.在客户映射文件中进行配置
+			<set name="setLinkMan" cascade="save-update,delete"></set>
+		b.直接删除客户
+			根据id查对象，再用session.delete(对象)进行删除
+	inverse属性
+		要求：改变外键的指向，先根据id得到客户和联系人，再把联系人和客户互相关联，改变外键值
+			customer=session.get(Customer,1);
+			linkman=session.get(LinkMan,2);
+			customer.getSetLinkMan().add(linkman)；linkman.setCustomer(customer)
+		hibernate中是双向维护外键，在修改客户时，修改一次外键，修改联系人，也修改一次外键
+		解决方式：让其中的一方不维护外键
+		实现：放弃的映射文件中，进行配置
+			<set inverse="true"></set>		//默认为false：表示不放弃，true为放弃
+		
+多对多配置
+	多对多映射配置
+		1.创建实体类，用户和角色
+		2.两个实体类互相进行表示
+			a.用户里面表示所有角色，set集合
+				Set<Role> setRole=new HashSet<Role>();
+			b.一个角色中多个用户，set集合
+				Set<User> setUser=new HashSet<User>();
+		3.配置映射关系
+			a.基本配置
+			b.配置多对多关系
+				<set name="setRole" table="user_role">	//name为创建的role对象，table为第三张表名
+					<key column="userid"></key>		//column为当前外键名称，与下面many-to-many对应
+					<many-to-many class="包名.Role" column="roleid"></many-to-many>	//class为全路径（包名.类名），column为第三张表外键名称，与下面key对应
+				</set>
+				
+				<set name="setUser" table="user_role">		//table与上面一样
+					<key column="roleid"></key>				//用户在第三张表的外键
+					<many-to-many class="包名.User" column="userid"></many-to-many>	//class为全路径（包名.类名
+				</set>
+		4.在核心配置文件中引入映射文件
+			与一对多相同，直接引入两个mapping
+	多对多级联保存
+		set中进行配置
+			User.hbm.xml中
+			<set cascade="save-update"></set>
+	多对多级联删除
+		set中进行配置
+			User.hbm.xml中
+			<set cascade="delete"></set>
+	维护第三张表，直接操作第三张表就可以创建和删除关联
+		添加
+			先根据id查询用户和角色
+			把角色放到用户里面
+		删除
+			先根据id查询用户和角色
+			从用户里面去掉角色——从set集合里面移除remove()方法

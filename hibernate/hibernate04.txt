@@ -1,0 +1,111 @@
+hibernate查询方式
+	1.对象导航查询——查询某个客户里面所有联系人
+		(1).根据id查询某个客户，再查询这个客户所有的联系人 
+			Customer customer=session.get(Customer.class,1);
+			Set<LinkMan> linkman=customer.getSetLinkMan();
+			System.out.println(linkman.length());
+	2.OID查询
+		(1).根据id查询某一条记录，返回对象，调用get方法		
+	3.hql查询
+		(1).Query对象，写hql语句查询
+		普通sql操作数据库表和字段，hql操作的是实体类和属性
+		常用的hql语句
+		使用hql查询时，需要使用Query对象实现
+			创建Query对象，写hql
+			调用query对象方法，得到结果
+				a.查询所有——查询所有的客户
+					Query query=session.createQuery("from Customer");
+					List<Customer> list=query.list();
+					for(Customer customer:list){
+						System.out.println(customer.getCid()+"""+customer.getCustName());
+					}
+				b.条件查询
+					hql条件查询语句
+						from 实体类名称 where 实体类属性名称=？ and 实体类属性名称=？;
+												实体类属性名称 like ?;
+					Query query=session.createQuery("from Customer c where c.cid=? and c.custname=?");
+					query.setParameter(0,1);		//第一个参数：0为问号的位置，从0开始。第二个参数：具体参数值
+					query.setParameter(1,"百度");
+					List<Customer> list=query.list();
+				c.排序查询
+					Query query=session.createQuery("from Customer order by cid desc");
+				d.分页查询
+					mysql实现分页：limit
+					hql实现分页：
+						Query query=session.createQuery("from Customer");
+						query.setFirstResult(0);		//设置开始位置
+						query.setMaxResults(3);			//每页记录数
+				e.投影查询：查一部分的值，不是查所有值
+					select 实体类属性名称,实体类属性名称 from 实体类名称
+						Query query=session.createQuery("select custName from Customer");
+					select 后面不能写*
+				f.聚集函数使用
+					常用聚集函数：count() sum() avg() max() min()
+					查询表里面的记录数
+						select count(*) from 实体类名称;
+						Query query=session.createQuery("select count(*) from Customer");
+						直接返回对象形式
+						Object obj=query.uniqueResult();	//得到唯一结果
+						System.out.println(obj);			//结果为count出来的值
+	4.QBC查询
+		(1).创建Criteria对象
+		(2).调用方法
+		查询所有
+			Criteria criteria=session.createCriteria(Customer.class);
+			List<Customer> list=criteria.list();
+		条件查询
+			没有语句书写，使用封装的方法
+			Criteria criteria=session.createCriteria(Customer.class);
+			使用add方法，表示设置条件值
+			在add方法里面使用类的方法实现条件设置
+			criteria.add(Restricitions.eq("cid",1));		//第一个为属性名字，第二个为值
+			criteria.add(Restricitions.eq("custName","百度"));
+			criteria.add(Restricitions.like("custName","%百%"));		//其他的用的时候查
+		排序查询
+			Criteria criteria=session.createCriteria(Customer.class);
+			criteria.add(Order.desc("属性名称"));
+		分页查询
+			Criteria criteria=session.createCriteria(Customer.class);
+			criteria.setFirstResult(0);				//开始位置
+			criteria.setMaxResults(3);				//最大数
+		统计查询
+			criteria.setProjection(Projections.rowCount());			//统计函数
+			Object obj=criteria.uniqueResult();						//得到唯一结果
+			Long lobj=(Long)obj;
+			int count=lobj.intValue();
+			System.out.println(count);								//变为int输出
+		离线查询——和session没关联
+			DetachedCriteria detachedCriteria=DetachedCriteria.forClass(Customer.class);		//不用session创建
+			Criteria criteria=detachedCriteria.getExecutableCriteria(session);		//执行的时候才用session
+			List<Customer> list=criteria.list();
+	5.本地sql查询
+		(1).SQLQuery对象使用普通sql，实现查询
+	hql多表查询
+		内连接——客户和联系人为例
+			from Customer c inner join c.setLinkMan;
+			Query query=session,createQuery("from Customer c inner join c.setLinkMan");
+			List list=query.list();				//list的每部分是数组形式
+		迫切内连接
+			和内连接底层实现一样，区别：内连接返回list为数组，迫切内连接返回list为对象
+			from Customer c inner join fetch c.setLinkMan;
+		左外连接
+			from Customer c left join c.setLinkMan;
+		迫切左外连接
+			from Customer c left join fetch c.setLinkMan;
+		右外连接
+	hibernate检索：
+		概念
+			立即检索：根据id查询，调用get方法，一调用get，马上发送查询语句
+				session.get(Customer.class,1);		//发送sql语句
+			延迟检索：根据id查询，调用load方法，调用load，不会马上发送语句，只有得到对象里面的值，才发送
+				Customer customer=session.load(Customer.class,2);
+				System.out.println(Customer.getCid());					//当得到id时，不发送
+				System.out.println(customer.getCustName());				//得到除id之外的其他值，发送sql语句
+			延迟查询分两类
+				类级别的延迟——上面的例子
+				关联级别的延迟：查询出某个客户，这个客户的所有联系人，查询所有联系人的过程是否需要延迟
+					映射文件配置，在客户映射中
+						<set fetch="select" lazy="false"></set>			//lazy:true-延迟，false-不延迟，extra-极其延迟
+		hibernate批量抓取：要查询所有的客户，返回list集合，遍历list集合，得到每个客户里面的联系人
+			在客户映射文件中，
+				<set batch-size="5"></set>

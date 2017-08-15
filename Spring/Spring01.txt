@@ -1,0 +1,68 @@
+概念
+	核心主要两部分：
+		aop：面向切面编程，扩展功能不是修改源代码实现
+		ioc：控制反转，比如有一个类，类里面有一个普通方法（非静态），调用方法需要创建对象，然后用对象调用。而ioc不是通过创建对象来调用，而是用spring进行配置创建对象
+	spring是一站式框架：
+		spring在javaee中三层结构中，每一层都提供了不同的解决方式。
+			web层：springMVC
+			service层：ioc
+			dao层：spring的jdbcTemplate
+Spring的ioc操作
+	1.把对象的创建交给spring进行管理
+	2.ioc操作两部分
+		(1).ioc的配置文件方式
+		(2).ioc的注解方式
+ioc底层原理
+	1.ioc底层原理使用技术
+		(1)xml配置文件
+		(2)dom4j解析xml
+		(3)工厂设计模式
+		(4)反射
+ioc入门案例
+	1.导包
+		解压spring，里面一个jar，一个文档，一个源码，导入核心包就行：Beans Core Context expression,日志jar：
+	2.创建类，在类里面创建方法
+	3.创建spring配置文件，配置创建的类
+		名称和位置不是固定的，一般放在src下，applicationContext.xml
+		引入约束：D:\Soft\JarPackage\spring\spring-framework-4.2.4.RELEASE\docs\spring-framework-reference\html里面的最后一个文件，用浏览器打开，从后往前找
+		<beans xmlns="http://www.springframework.org/schema/beans"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="
+				http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+			<bean id="user" class="ioc.User"></bean>		//id建议为类名小写，class为包名.类名
+		</beans>
+	4.写代码测试对象的创建 
+		//1.加载spring配置文件，创建对象
+		ApplicationContext context=new ClassPathXmlApplicationContext("bean1.xml");
+		//2.得到配置创建的对象,传id值，返回User对象
+		User user=(User)context.getBean("user");
+配置文件没有提示问题：上网搜索
+bean实例化三种方式
+	1.使用类的无参数构造创建
+		如果类里面没有无参构造，会出现异常
+	2.静态工厂创建
+	3.实例工厂创建
+<bean>中属性的介绍
+	id:起的唯一标识符，只能英文
+	class:创建对象所在类的全路径
+	name:作用和id一样，但可以包含特殊符号，一般不用			//参考html里面的id和name
+	scope:作用范围
+		singleton:默认值，单例
+		prototype:多例
+属性注入：向类里面的属性设置值
+注入对象类型属性
+	创建service类和dao类，在service中得到dao对象
+		a.在service里面把dao作为类型属性
+		b.生成dao类型的set方法
+			<bean id="userDao" class="类名.包名"></bean>
+			<bean id="userService" class="类名.包名">
+				<property name="userDao" ref="userDao"></property>	//name为service类里面的属性名称。不写value，写ref(引用id)
+			</bean>
+使用set方法注入属性：
+	<bean id="book" class="全路径">
+		<property name="bookname" value="小兰的人生故事"></property>
+	</bean>
+使用有参构造注入属性：
+	<bean id="demo" class="全路径">
+		<constructor-arg name="属性名" value="属性值"></constructor-arg>
+	</bean>

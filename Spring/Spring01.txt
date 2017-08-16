@@ -66,3 +66,57 @@ bean实例化三种方式
 	<bean id="demo" class="全路径">
 		<constructor-arg name="属性名" value="属性值"></constructor-arg>
 	</bean>
+注入复杂类型属性
+	1.数组
+	<bean id="person" class="包名.类名">
+		<property name="属性名字">
+			<lsit>
+				<value>小王</value>
+				<value>小蓝</value>
+				<value>小兰</value>
+				<value>小禹</value>
+			</list>
+		</property>
+	</bean>
+	2.list集合
+	<property name="属性名字">
+			<lsit>
+				<value>小王</value>
+				<value>小蓝</value>
+				<value>小兰</value>
+				<value>小禹</value>
+			</list>
+		</property>
+	3.map集合
+		<property name="属性名字">
+			<map>
+				<entry key="aa" value="小王"></entry>
+				<entry key="bb" value="小王"></entry>
+				<entry key="cc" value="小王"></entry>
+				<entry key="dd" value="小王"></entry>
+			</map>
+		</property>
+	4.properties类型
+		<property name="属性名字">
+			<props>
+				<prop key="xx">yy</prop>
+			</props>
+		</property>
+IOC和DI区别
+	IOC：控制反转，把对象的创建交给spring进行配置
+	DI:依赖注入，向类属性中设置值
+	关系：依赖注入不能单独存在，需要在ioc的基础上完成
+spring整合web项目原理
+	1.加载核心配置文件
+	ApplicationContext context=new ClassPathXmlApplicationContext("bean1.xml");
+	需要new对象，但效率低。
+	2.解决思想：加载配置文件和创建对象的过程，在服务器启动时候完成
+	3.实现原理
+		a.ServletContext对象
+		b.监听器
+		c.具体使用
+		在服务器启动的时候，为每个项目创建ServletContext对象
+		在ServletContext对象创建的时候，使用监听器可以具体得到ServletContext对象在什么时候创建
+		使用监听器监听到ServletContext对象创建时，加载spring的配置文件，把配置文件的对象进行创建
+		把创建出来的对象放到ServletContext域对象里面(setAttribute方法)
+		获取对象的时候，到ServletContext域得到（getAttribute方法）

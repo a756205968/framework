@@ -1,0 +1,38 @@
+Spring的bean管理（注解）
+注解：代码里面特殊标记，使用注解完成功能
+	@注解名称(属性名称=属性值)
+	可以使用再属性、类、方法上
+	
+spring注解开发准备
+	1.导入jar包和aop jar包（spring-aop）
+	2.创建配置文件，引入约束，如果要做注解开发，还需要引入新的约束
+		<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context" xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"></beans>
+			<context:component-scan base-package="anno"></context:component-scan>	//开启注解的扫描
+		
+注解创建对象
+	在要创建对象类的上边使用注解
+	@Component(value="user")	//<bean id="user" class="">,相当于id
+	@Scope(value="prototype")	//配置为多实例
+	常用注解：功能是一样的，都用来创建对象
+		@Component
+		@Controller	:WEB层
+		@Serviec	:业务层
+		@Repository	:持久层
+注解注入属性
+1.创建service类，创建dao类，在service得到dao对象
+创建两个对象
+	@Service(value="userService")
+	@Component(value="userDao")
+在service里面定义dao类型的属性
+	private UserDao userDao;
+在属性上面加注解
+	@Autowired
+	private UserDao userDao;
+  或者使用
+	@Resource(name="userDao")
+	private UserDao userDao;
+05

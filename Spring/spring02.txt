@@ -35,4 +35,72 @@ spring注解开发准备
   或者使用
 	@Resource(name="userDao")
 	private UserDao userDao;
-05
+创建对象操作一般用配置文件实现
+注入属性的操作使用注解方式实现
+
+AOP概念
+	面向切面编程，扩展功能不修改源代码（横向抽取功能）
+AOP原理
+	有接口，就同级创建代理对象，没有接口就创建子类实现
+AOP操作术语
+	连接点：类里面那些方法可以被增强，这些方法叫连接点。
+	切入点：在类里面可以有很多方法被增强，实际操作中，只是增强了add和update方法，实际增强的方法叫切入点
+	通知/增强：增强的逻辑称为增强，比如拓展日志功能，这个日志功能为增强。
+				前置增强：方法之前执行
+				后置增强：方法之后执行
+				异常增强：方法出现异常
+				最终增强：后置增强之后执行
+				环绕增强：在方法之前和之后执行	代码中需要传参数：ProceedingJoinPoint
+					增强之前之后分割点：proceedingJOinPoint.proceed();		//就写法不同
+					xml中的配置：<aop:around method="around1" pointcut-ref="pointcut1">
+	切面：把增强应用到具体的方法上，过程称为切面。把增强用到切入点的过程。
+Spring的aop操作
+	1.在spring里面进行aop操作，使用aspectj
+	2.两种实现方式
+		a.基于aspectj的xml配置
+		b.基于aspectj的注解方式
+	准备工作：
+		除了导入最基本的jar外，还需要导入aop相关jar——直接用集合了的jar包
+		创建一个spring核心配置文件，导入aop约束
+		使用表达式配置切入点
+			常用写法：
+			execution(*空格包名.类名.方法名(..))	execution(* xxx.Book.add(..))
+			execution(*空格包名.类名.*(..))	execution(* xxx.Book.*(..))
+			execution(*空格*.*(..))	execution(* *.*(..))
+			
+		<aop:config>
+			<!--配置切入点 expression为表达式，id为唯一标识符 -->
+			<!--execution(*空格包名.类名.方法名(..))	execution(* xxx.Book.add(..))
+				execution(*空格包名.类名.*(..))	execution(* xxx.Book.*(..))
+				execution(*空格*.*(..))	execution(* *.*(..)) -->
+			<aop:pointcut expression="execution(* TEST.Book.add(..))" id="pointcut1"/>
+			<!-- 配置切面 ref为增强对象 -->
+			<aop:aspect ref="aopAdd">
+				<!-- 配置增强类型 method为增强类里面使用那个方法 pointcut-ref引用切入点-->
+				<aop:before method="beforeAdd" pointcut-ref="pointcut1"/>
+			</aop:aspect>
+		</aop:config>
+log4j介绍
+	导入jar包
+	复制log4j的配置文件，复制到src下
+	
+	
+Spring整合web项目
+1.演示问题
+	a.action中调用service，service调用dao——服务器启动的时候创建对象
+		底层封装了一个监听器，配置就行,在web.xml中,导入jar包
+		<listener>
+			<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+		</listener>
+		指定加载spring配置文件的位置
+		<context-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:包名.bean1.xml</param-value>
+		</context-param>
+		
+		
+		
+		
+		
+		
+		

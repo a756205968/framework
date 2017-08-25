@@ -1,0 +1,26 @@
+ssh整合思想
+	两个框架整合
+		struts2和spring整合
+			把struts中的action对象交给spring创建
+			<bean id="" class="" scope="protype"></bean>
+		spring和hibernate整合
+			把hibernate核心配置文件里面的数据库配置写在spring中
+			第一次访问很慢，因为第一次访问会创建sessionFactory对象，把sessionFactory对象创建交给spring进行管理，在服务器启动的时候创建该对象。
+struts2和spring整合
+	jar包
+	在spring配置文件中配置action对象
+	<bean id="userAction" class="全路径" scope="prototype"></bean>
+	在web.xml中配置监听器
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<context-parm>
+		<parm-name>contextConfigLocation</parm-name>
+		<parm-value>classpath:bean1.xml</parm-value>
+	<context-parm>
+	struts2.xml中配置
+	<package name="demo1" extends="struts-default" namespace="/">
+		<action name="userAction" class="userAction>		//class中就不用写类的全路径了，写spring中配置的bean的id值
+	</package>
+spring和hibernate整合
+04

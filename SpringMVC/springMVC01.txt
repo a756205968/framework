@@ -1,0 +1,35 @@
+SpringMVC介绍
+Spring流程图
+	1.用户请求——2.请求业务处理——3.返回处理结果——4.处理结果转发给jsp——5.返回html页面——6.相应用户
+SpringMVC前端控制器
+<!-- 前端控制器 -->
+  <servlet>
+  	<servlet-name>springmvc</servlet-name>
+  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  	<!--  -->
+  	<init-param>
+  		<param-name>contextConfigLocation</param-name>
+  		<param-value>classpath:springmvc.xml</param-value>
+  	</init-param>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>springmvc</servlet-name>
+  	<!-- 1./*拦截所有 jsp js png .css所有全拦截 建议不使用
+  		 2.*。action *.do 拦截以action   do结尾的请求 肯定能使用，用在后台
+  		 3./ 拦截所有（不包含jsp，但是包含js，png，css等）建议使用    前台，面向消费者-->
+  	<url-pattern>*.action</url-pattern>
+  </servlet-mapping>
+  
+SpringMVC入门程序
+	springmvc.xml
+	<?xml version="1.0" encoding="UTF-8"?>
+	<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:mvc="http://www.springframework.org/schema/mvc"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	<!-- 扫描 @Controler @Service -->
+	<context:component-scan base-package="xmy"></context:component-scan>
+	</beans>

@@ -1,0 +1,3 @@
+maven简介
+	什么是maven：apache下的一个开源项目，纯java开发，并且只是用来管理java项目
+	项目的一键构建：tomcat:run 就能运行项目

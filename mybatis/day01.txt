@@ -1,0 +1,71 @@
+环境搭建：
+	1.导包
+	2.核心配置文件：sqlMapConfig.xml
+	3.User.xml,写sql语句，然后在sqlMapConfig.xml配置<mappers><mapper resource="sqlmap/User.xml"></mapper></mappers>
+通过id查询
+	1.加载核心配置文件
+		String resource="sqlMapConfig.xml";
+		InputStream in=Resources.getResourceAsStream(resource);
+	2.创建一个SqlSessionFactory
+		SqlSessionFactory sqlSessionFactory=newSqlSessionFactoryBuilder().build(in);
+	3.创建sqlsession
+	SqlSession sqlSession=sqlSessionFactory.openSession();
+	4.执行sql语句，在mapper里面写（User.xml）
+		User user=sqlSession.selectOne("test.findUserById","入参");
+		User.xml里
+			<mapper namespace="test">
+				<select id="findUserById" parameterType="Integer" resultType="包名.User">
+					select * from user where id=#{v}
+				</select>
+			</mapper>
+#{}表示占位符，随便写
+#${}是字符串拼接，只能用value
+通过用户名称模糊查询
+	User user=sqlSession.selectList("test.findUserById","入参");
+	User.xml里
+		<select id="findUserByUsername" parameterType="String" resultType="包名.User">
+			select * from user where username like '%${value}%'
+		</select>
+添加用户
+	int num=sqlSession.insert("test.insertUser",user);
+	sqlSession.commit();
+	User.xml里
+		<insert id="insertUser" parameterType="包名.User">
+			insert into user(username,birthday,address,sex) values(#{username},#{birthday},#{address},#{sex})
+		</insert>
+添加用户返回id
+	User.xml里
+		<insert id="insertUser" parameterType="包名.User">
+			<selectkey keyProperty="id" resultType="Integer" order="AFTER">
+				select LAST_INSERT_ID()
+			</selectkey>
+			insert into user(username,birthday,address,sex) values(#{username},#{birthday},#{address},#{sex})
+		</insert>
+修改
+	sqlSession.update("test.updateUserById",user);
+	User.xml里
+		<update id="updateUserById" parameterType="包名.User">
+			update user set username=#{username},sex=#{sex},birthday=#{birthday},address=#{address}
+			where id=#{id}
+		</update>
+删除
+	sqlSession.delete("test.deleteUserById",id值);
+	<delete id="deleteUserById" parameterType="Integer">
+		delete from user where id=#{id}
+	</delete>
+Mybatis与Hibernate的区别
+	mybatis不完全是ORM框架，mybatis需要写sql语句
+	mybatis可以严格控制sql执行性能，灵活度高，mybatis无法做到与数据库的完全无关
+原始Dao开发
+Mapper动态代理开发
+	遵循4个原则
+	1.接口 方法名==User.xml中的id名
+	2.返回值类型与Mapper.xm中返回值类型一致
+	3.方法入参类型，与Mapper.xml文件中入参类型一致
+	4.User.xml中的namespace为UserDao的路径
+小结
+SqlMapConfig之properties
+SqlMapConfig之typeAliases
+SqlMapConfig之Mapper
+总结
+	
